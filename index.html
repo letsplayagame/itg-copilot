@@ -11,6 +11,8 @@
             --terra-cotta: #E2725B;
             --background: #F4F1EA;
             --text: #2C3639;
+            --warning-yellow: #D4B483;
+            --warning-red: #C1666B;
         }
 
         body {
@@ -29,6 +31,29 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
+        .system-status {
+            text-align: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+        }
+
+        .status-ok {
+            background: var(--sage-green);
+            color: white;
+        }
+
+        .status-warning {
+            background: var(--warning-yellow);
+            color: var(--text);
+        }
+
+        .status-error {
+            background: var(--warning-red);
+            color: white;
+        }
+
         .card-header {
             padding: 16px;
             border-bottom: 1px solid #eee;
@@ -39,6 +64,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .time-section {
+            text-align: right;
+        }
+
+        .countdown {
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .countdown.prep-time {
+            color: var(--sage-green);
+            font-weight: bold;
+        }
+
+        .countdown.urgent {
+            color: var(--warning-red);
+            font-weight: bold;
         }
 
         .progress-bar {
@@ -108,10 +152,14 @@
 </head>
 <body>
     <div class="card">
+        <div id="system-status" class="system-status"></div>
         <div class="card-header">
             <div class="header-content">
                 <h2>Pre-Market Checklist</h2>
-                <span class="time" id="current-time"></span>
+                <div class="time-section">
+                    <div class="time" id="current-time"></div>
+                    <div class="countdown" id="countdown"></div>
+                </div>
             </div>
             <div class="progress-bar">
                 <div class="progress" id="progress"></div>
@@ -127,17 +175,67 @@
 
     <script>
         const checklistItems = [
-            "Review overnight market events",
-            "Check economic calendar",
-            "Review pre-market movers",
-            "Check futures market",
-            "Review trading plan",
-            "Set daily profit target",
-            "Set daily loss limit",
-            "Check trading equipment"
+            "Check events and data calendar",
+            "Monitor overnight news",
+            "Mark overnight levels",
+            "Verify apps and check account balances",
+            "Prepare coffee/water",
+            "Move/breath before the open"
         ];
 
-        // Initialize checklist
+        function updateSystemStatus() {
+            const total = checklistItems.length;
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const unchecked = total - checked;
+            const statusElement = document.getElementById('system-status');
+
+            if (unchecked === 0) {
+                statusElement.textContent = "System Check: OK";
+                statusElement.className = "system-status status-ok";
+            } else if (unchecked <= 2) {
+                statusElement.textContent = "Warning: Check Systems";
+                statusElement.className = "system-status status-warning";
+            } else {
+                statusElement.textContent = "Warning: System Not Ready!";
+                statusElement.className = "system-status status-error";
+            }
+        }
+
+        function formatCountdown(timeDiff) {
+            if (timeDiff < 0) return "Market Open";
+            
+            const hours = Math.floor(timeDiff / 3600000);
+            const minutes = Math.floor((timeDiff % 3600000) / 60000);
+            const seconds = Math.floor((timeDiff % 60000) / 1000);
+            
+            return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} until open`;
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const marketOpen = new Date(now);
+            marketOpen.setHours(9, 30, 0, 0);
+            
+            // If it's past 9:30 AM, set for next day
+            if (now > marketOpen) {
+                marketOpen.setDate(marketOpen.getDate() + 1);
+            }
+
+            const timeDiff = marketOpen - now;
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.textContent = formatCountdown(timeDiff);
+
+            // Update countdown styling based on time
+            const minutesToOpen = timeDiff / 60000;
+            if (minutesToOpen <= 30 && minutesToOpen > 10) {
+                countdownElement.className = 'countdown prep-time';
+            } else if (minutesToOpen <= 10 && minutesToOpen > 0) {
+                countdownElement.className = 'countdown urgent';
+            } else {
+                countdownElement.className = 'countdown';
+            }
+        }
+
         function initChecklist() {
             const checklist = document.getElementById('checklist');
             checklistItems.forEach((item, index) => {
@@ -150,7 +248,6 @@
                 checklist.appendChild(div);
             });
 
-            // Load saved state
             const saved = localStorage.getItem('checklist-state');
             if (saved) {
                 const states = JSON.parse(saved);
@@ -167,7 +264,6 @@
             }
         }
 
-        // Update progress bar
         function updateProgress() {
             const total = checklistItems.length;
             const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
@@ -175,7 +271,6 @@
             
             document.getElementById('progress').style.width = `${progress}%`;
 
-            // Update item styles
             document.querySelectorAll('.checklist-item').forEach(item => {
                 if (item.querySelector('input[type="checkbox"]').checked) {
                     item.classList.add('checked');
@@ -183,9 +278,10 @@
                     item.classList.remove('checked');
                 }
             });
+
+            updateSystemStatus();
         }
 
-        // Save checklist state
         function saveChecklist() {
             const states = checklistItems.map((_, index) => 
                 document.getElementById(`item-${index}`).checked
@@ -194,7 +290,6 @@
             alert('Progress saved!');
         }
 
-        // Update time
         function updateTime() {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('en-US', {
@@ -209,7 +304,9 @@
         // Initialize
         initChecklist();
         updateTime();
+        updateCountdown();
         setInterval(updateTime, 60000); // Update time every minute
+        setInterval(updateCountdown, 1000); // Update countdown every second
     </script>
 </body>
 </html>
