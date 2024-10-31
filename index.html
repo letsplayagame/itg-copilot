@@ -212,28 +212,35 @@
         }
 
         function updateCountdown() {
-            const now = new Date();
-            const marketOpen = new Date(now);
-            marketOpen.setHours(9, 30, 0, 0);
-            
-            // If it's past 9:30 AM, set for next day
-            if (now > marketOpen) {
-                marketOpen.setDate(marketOpen.getDate() + 1);
-            }
+        const now = new Date();
+        const marketOpen = new Date(now);
+        marketOpen.setHours(9, 30, 0, 0); // Set to 9:30 AM
+        
+        // If it's past 9:30 AM today, set for next day
+        if (now.getHours() > 9 || (now.getHours() === 9 && now.getMinutes() >= 30)) {
+            marketOpen.setDate(marketOpen.getDate() + 1);
+        }
 
-            const timeDiff = marketOpen - now;
-            const countdownElement = document.getElementById('countdown');
-            countdownElement.textContent = formatCountdown(timeDiff);
+        const timeDiff = marketOpen - now;
+        const countdownElement = document.getElementById('countdown');
+        countdownElement.textContent = formatCountdown(timeDiff);
 
-            // Update countdown styling based on time
-            const minutesToOpen = timeDiff / 60000;
-            if (minutesToOpen <= 30 && minutesToOpen > 10) {
-                countdownElement.className = 'countdown prep-time';
-            } else if (minutesToOpen <= 10 && minutesToOpen > 0) {
+        // Update countdown styling based on time
+        const currentHour = now.getHours();
+        const currentMinutes = now.getMinutes();
+        const totalMinutes = currentHour * 60 + currentMinutes;
+        const marketOpenMinutes = 9 * 60 + 30; // 9:30 AM in minutes
+        const minutesToOpen = marketOpenMinutes - totalMinutes;
+
+        if (totalMinutes >= 9 * 60 && totalMinutes < 9 * 60 + 30) { // Between 9:00 and 9:30
+            if (minutesToOpen <= 10) {
                 countdownElement.className = 'countdown urgent';
             } else {
-                countdownElement.className = 'countdown';
+                countdownElement.className = 'countdown prep-time';
             }
+        } else {
+            countdownElement.className = 'countdown';
+        }
         }
 
         function initChecklist() {
