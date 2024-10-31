@@ -183,6 +183,10 @@
             "Move/breath before the open"
         ];
 
+        function getNYDateTime() {
+            return new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+        }
+
         function updateSystemStatus() {
             const total = checklistItems.length;
             const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
@@ -212,35 +216,32 @@
         }
 
         function updateCountdown() {
-        const now = new Date();
-        const marketOpen = new Date(now);
-        marketOpen.setHours(9, 30, 0, 0); // Set to 9:30 AM
-        
-        // If it's past 9:30 AM today, set for next day
-        if (now.getHours() > 9 || (now.getHours() === 9 && now.getMinutes() >= 30)) {
-            marketOpen.setDate(marketOpen.getDate() + 1);
-        }
-
-        const timeDiff = marketOpen - now;
-        const countdownElement = document.getElementById('countdown');
-        countdownElement.textContent = formatCountdown(timeDiff);
-
-        // Update countdown styling based on time
-        const currentHour = now.getHours();
-        const currentMinutes = now.getMinutes();
-        const totalMinutes = currentHour * 60 + currentMinutes;
-        const marketOpenMinutes = 9 * 60 + 30; // 9:30 AM in minutes
-        const minutesToOpen = marketOpenMinutes - totalMinutes;
-
-        if (totalMinutes >= 9 * 60 && totalMinutes < 9 * 60 + 30) { // Between 9:00 and 9:30
-            if (minutesToOpen <= 10) {
-                countdownElement.className = 'countdown urgent';
-            } else {
-                countdownElement.className = 'countdown prep-time';
+            const nyTime = new Date(getNYDateTime());
+            const marketOpen = new Date(nyTime);
+            marketOpen.setHours(9, 30, 0, 0);
+            
+            // If it's past 9:30 AM ET today, set for next day
+            if (nyTime > marketOpen) {
+                marketOpen.setDate(marketOpen.getDate() + 1);
             }
-        } else {
-            countdownElement.className = 'countdown';
-        }
+
+            const timeDiff = marketOpen - nyTime;
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.textContent = formatCountdown(timeDiff);
+
+            // Color logic based on NY time
+            const currentHour = nyTime.getHours();
+            const currentMinutes = nyTime.getMinutes();
+
+            if (currentHour === 9) {
+                if (currentMinutes >= 20 && currentMinutes < 30) {
+                    countdownElement.className = 'countdown urgent';
+                } else if (currentMinutes < 30) {
+                    countdownElement.className = 'countdown prep-time';
+                }
+            } else {
+                countdownElement.className = 'countdown';
+            }
         }
 
         function initChecklist() {
@@ -298,12 +299,10 @@
         }
 
         function updateTime() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', {
+            const timeStr = new Date(getNYDateTime()).toLocaleTimeString('en-US', {
                 hour12: false,
                 hour: '2-digit',
-                minute: '2-digit',
-                timeZone: 'America/New_York'
+                minute: '2-digit'
             });
             document.getElementById('current-time').textContent = `${timeStr} ET`;
         }
