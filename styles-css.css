@@ -1,0 +1,238 @@
+:root {
+    --primary-green: #8BA888;
+    --warm-gray: #9B8E83;
+    --terra-cotta: #E2725B;
+    --light-sand: #F4F1EA;
+    --dark-gray: #2C3639;
+    --status-green: #7FA084;
+    --status-yellow: #D4B483;
+    --status-red: #C1666B;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--light-sand);
+    color: var(--dark-gray);
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* Card Styles */
+.card {
+    max-width: 600px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.header-content {
+    margin-bottom: 15px;
+}
+
+/* Status and Summary Styles */
+.system-status {
+    padding: 10px 20px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.status-error {
+    background: var(--status-red);
+    color: white;
+}
+
+.status-warning {
+    background: var(--status-yellow);
+    color: white;
+}
+
+.status-ok {
+    background: var(--status-green);
+    color: white;
+}
+
+.summary-bar {
+    background: var(--primary-green);
+    color: white;
+    padding: 10px 20px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+/* Time Section */
+.time-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.time, .countdown {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+/* Progress Bar */
+.progress-bar {
+    background: #eee;
+    height: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress {
+    background: var(--warm-gray);
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* Checklist */
+.checklist {
+    padding: 20px;
+}
+
+.checklist-item {
+    padding: 10px 15px;
+    margin: 5px 0;
+    background: #f8f8f8;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.checklist-item:hover {
+    background: #f0f0f0;
+}
+
+.checklist-item.checked {
+    background: var(--primary-green);
+    color: white;
+}
+
+/* Actions */
+.actions {
+    padding: 20px;
+    text-align: center;
+}
+
+button {
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background: #7a967a;
+}
+
+/* Demon Finder Specific Styles */
+.demon-finder {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.demon-finder .header {
+    background-color: #f0f0f0;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ddd;
+}
+
+.demon-finder .title {
+    color: var(--status-red);
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.reset-btn {
+    background-color: var(--status-red);
+    color: white;
+}
+
+.reset-btn:hover {
+    background-color: #a85551;
+}
+
+.table-container {
+    overflow-x: auto;
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f8f8f8;
+    font-weight: 600;
+}
+
+.mistake-cell {
+    font-weight: 500;
+    cursor: pointer;
+    padding: 12px;
+}
+
+.mistake-cell:hover {
+    background-color: #f5f5f5;
+}
+
+.demon-number {
+    text-align: center;
+    width: 40px;
+}
+
+.stop-trading {
+    background-color: #fff0f0;
+    text-align: center;
+    font-weight: 600;
+    color: var(--status-red);
+}
+
+.checkmark {
+    color: #2d9d78;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .table-container {
+        padding: 10px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+}
