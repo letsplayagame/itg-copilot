@@ -4,315 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ITG CoPilot</title>
-    <style>
-        :root {
-            --sage-green: #8BA888;
-            --warm-gray: #9B8E83;
-            --terra-cotta: #E2725B;
-            --background: #F4F1EA;
-            --text: #2C3639;
-            --warning-yellow: #D4B483;
-            --warning-red: #C1666B;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: var(--background);
-            color: var(--text);
-            margin: 0;
-            padding: 16px;
-        }
-
-        .card {
-            background: white;
-            max-width: 600px;
-            margin: 0 auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .system-status {
-            text-align: center;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 8px 8px 0 0;
-            font-weight: bold;
-        }
-
-        .status-ok {
-            background: var(--sage-green);
-            color: white;
-        }
-
-        .status-warning {
-            background: var(--warning-yellow);
-            color: var(--text);
-        }
-
-        .status-error {
-            background: var(--warning-red);
-            color: white;
-        }
-
-        .card-header {
-            padding: 16px;
-            border-bottom: 1px solid #eee;
-            background: #f8f8f8;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .time-section {
-            text-align: right;
-        }
-
-        .countdown {
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .countdown.prep-time {
-            color: var(--sage-green);
-            font-weight: bold;
-        }
-
-        .countdown.urgent {
-            color: var(--warning-red);
-            font-weight: bold;
-        }
-
-        .progress-bar {
-            background: #e0e0e0;
-            height: 4px;
-            border-radius: 2px;
-            margin-top: 8px;
-        }
-
-        .progress {
-            background: var(--sage-green);
-            height: 100%;
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        .checklist {
-            padding: 16px;
-        }
-
-        .checklist-item {
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            cursor: pointer;
-        }
-
-        .checklist-item:hover {
-            background: #f5f5f5;
-        }
-
-        .checklist-item input[type="checkbox"] {
-            margin-right: 12px;
-            width: 18px;
-            height: 18px;
-        }
-
-        .checklist-item.checked label {
-            text-decoration: line-through;
-            color: #666;
-        }
-
-        .actions {
-            padding: 16px;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        button {
-            background: var(--sage-green);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        .time {
-            color: #666;
-            font-size: 14px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="card">
-        <div id="system-status" class="system-status"></div>
+        <div class="system-status status-error" id="system-status">
+            Warning: System Not Ready!
+        </div>
+
         <div class="card-header">
             <div class="header-content">
                 <h2>Pre-Market Checklist</h2>
+
                 <div class="time-section">
-                    <div class="time" id="current-time"></div>
-                    <div class="countdown" id="countdown"></div>
+                    <div id="current-time" class="time">
+                        15:20 ET
+                    </div>
+
+                    <div id="countdown" class="countdown">
+                        18:09:42 until open
+                    </div>
                 </div>
             </div>
+
             <div class="progress-bar">
-                <div class="progress" id="progress"></div>
+                <div id="progress" class="progress" style="width: 0%;">
+                </div>
             </div>
         </div>
-        <div class="checklist" id="checklist">
-            <!-- Checklist items will be added here -->
+
+        <div id="checklist" class="checklist">
+            <div class="checklist-item" onclick="toggleItem(this)">
+                Check events and data calendar
+            </div>
+
+            <div class="checklist-item" onclick="toggleItem(this)">
+                Monitor overnight news
+            </div>
+
+            <div class="checklist-item" onclick="toggleItem(this)">
+                Mark overnight levels
+            </div>
+
+            <div class="checklist-item" onclick="toggleItem(this)">
+                Verify apps and check account balances
+            </div>
+
+            <div class="checklist-item" onclick="toggleItem(this)">
+                Prepare coffee/water
+            </div>
+
+            <div class="checklist-item" onclick="toggleItem(this)">
+                Move/breath before the open
+            </div>
         </div>
+
+        <div class="summary-bar">
+            Pre-market items: <span id="checklist-summary">0/6</span> complete
+        </div>
+
         <div class="actions">
-            <button onclick="saveChecklist()">Save Progress</button>
+            <button onclick="initiateSession()">Initiate Session</button>
         </div>
     </div>
 
     <script>
-        const checklistItems = [
-            "Check events and data calendar",
-            "Monitor overnight news",
-            "Mark overnight levels",
-            "Verify apps and check account balances",
-            "Prepare coffee/water",
-            "Move/breath before the open"
-        ];
-
-        function getNYDateTime() {
-            return new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
-        }
-
-        function updateSystemStatus() {
-            const total = checklistItems.length;
-            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
-            const unchecked = total - checked;
-            const statusElement = document.getElementById('system-status');
-
-            if (unchecked === 0) {
-                statusElement.textContent = "System Check: OK";
-                statusElement.className = "system-status status-ok";
-            } else if (unchecked <= 2) {
-                statusElement.textContent = "Warning: Check Systems";
-                statusElement.className = "system-status status-warning";
-            } else {
-                statusElement.textContent = "Warning: System Not Ready!";
-                statusElement.className = "system-status status-error";
-            }
-        }
-
-        function formatCountdown(timeDiff) {
-            if (timeDiff < 0) return "Market Open";
-            
-            const hours = Math.floor(timeDiff / 3600000);
-            const minutes = Math.floor((timeDiff % 3600000) / 60000);
-            const seconds = Math.floor((timeDiff % 60000) / 1000);
-            
-            return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} until open`;
-        }
-
-        function updateCountdown() {
-            const nyTime = new Date(getNYDateTime());
-            const marketOpen = new Date(nyTime);
-            marketOpen.setHours(9, 30, 0, 0);
-            
-            // If it's past 9:30 AM ET today, set for next day
-            if (nyTime > marketOpen) {
-                marketOpen.setDate(marketOpen.getDate() + 1);
-            }
-
-            const timeDiff = marketOpen - nyTime;
-            const countdownElement = document.getElementById('countdown');
-            countdownElement.textContent = formatCountdown(timeDiff);
-
-            // Color logic based on NY time
-            const currentHour = nyTime.getHours();
-            const currentMinutes = nyTime.getMinutes();
-
-            if (currentHour === 9) {
-                if (currentMinutes >= 20 && currentMinutes < 30) {
-                    countdownElement.className = 'countdown urgent';
-                } else if (currentMinutes < 30) {
-                    countdownElement.className = 'countdown prep-time';
-                }
-            } else {
-                countdownElement.className = 'countdown';
-            }
-        }
-
-        function initChecklist() {
-            const checklist = document.getElementById('checklist');
-            checklistItems.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'checklist-item';
-                div.innerHTML = `
-                    <input type="checkbox" id="item-${index}" onchange="updateProgress()">
-                    <label for="item-${index}">${item}</label>
-                `;
-                checklist.appendChild(div);
-            });
-
-            const saved = localStorage.getItem('checklist-state');
-            if (saved) {
-                const states = JSON.parse(saved);
-                states.forEach((checked, index) => {
-                    const checkbox = document.getElementById(`item-${index}`);
-                    if (checkbox) {
-                        checkbox.checked = checked;
-                        if (checked) {
-                            checkbox.parentElement.classList.add('checked');
-                        }
-                    }
-                });
-                updateProgress();
-            }
+        function toggleItem(element) {
+            element.classList.toggle('checked');
+            updateProgress();
         }
 
         function updateProgress() {
-            const total = checklistItems.length;
-            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
-            const progress = (checked / total) * 100;
+            const total = document.querySelectorAll('.checklist-item').length;
+            const checked = document.querySelectorAll('.checklist-item.checked').length;
             
+            document.getElementById('checklist-summary').textContent = `${checked}/${total}`;
+            
+            const progress = (checked / total) * 100;
             document.getElementById('progress').style.width = `${progress}%`;
 
-            document.querySelectorAll('.checklist-item').forEach(item => {
-                if (item.querySelector('input[type="checkbox"]').checked) {
-                    item.classList.add('checked');
-                } else {
-                    item.classList.remove('checked');
-                }
-            });
-
-            updateSystemStatus();
-        }
-
-        function saveChecklist() {
-            const states = checklistItems.map((_, index) => 
-                document.getElementById(`item-${index}`).checked
-            );
-            localStorage.setItem('checklist-state', JSON.stringify(states));
-            alert('Progress saved!');
+            // Update system status
+            const statusElement = document.getElementById('system-status');
+            if (checked === total) {
+                statusElement.className = 'system-status status-ok';
+                statusElement.textContent = 'System Check: OK';
+            } else if (checked >= total - 2) {
+                statusElement.className = 'system-status status-warning';
+                statusElement.textContent = 'Warning: Check Systems';
+            } else {
+                statusElement.className = 'system-status status-error';
+                statusElement.textContent = 'Warning: System Not Ready!';
+            }
         }
 
         function updateTime() {
-            const timeStr = new Date(getNYDateTime()).toLocaleTimeString('en-US', {
-                hour12: false,
+            const now = new Date();
+            
+            // Update current time (ET)
+            const et = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/New_York',
                 hour: '2-digit',
-                minute: '2-digit'
-            });
-            document.getElementById('current-time').textContent = `${timeStr} ET`;
+                minute: '2-digit',
+                hour12: false
+            }).format(now);
+            document.getElementById('current-time').textContent = `${et} ET`;
+
+            // Calculate time until market open
+            const marketOpen = new Date(now);
+            marketOpen.setHours(9, 30, 0, 0);
+            if (now > marketOpen) {
+                marketOpen.setDate(marketOpen.getDate() + 1);
+            }
+            const diff = marketOpen - now;
+            const hours = Math.floor(diff / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            
+            document.getElementById('countdown').textContent = 
+                `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} until open`;
+        }
+
+        function initiateSession() {
+            window.location.href = 'session.html';
         }
 
         // Initialize
-        initChecklist();
+        setInterval(updateTime, 1000);
         updateTime();
-        updateCountdown();
-        setInterval(updateTime, 60000); // Update time every minute
-        setInterval(updateCountdown, 1000); // Update countdown every second
+        updateProgress();
     </script>
 </body>
 </html>
