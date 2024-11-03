@@ -5,6 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ITG CoPilot - Trading Session</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Additional styles for demon log */
+        .demon-log {
+            margin-top: 30px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .demon-log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .demon-log-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--status-red);
+        }
+
+        .demon-counter {
+            background: var(--status-red);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: 500;
+        }
+
+        .demon-log-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .demon-log-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+
+        .demon-log-item:hover {
+            background-color: #f8f8f8;
+        }
+
+        .demon-log-time {
+            color: var(--warm-gray);
+            font-size: 0.9em;
+            width: 80px;
+        }
+
+        .demon-log-name {
+            flex-grow: 1;
+            margin: 0 20px;
+        }
+
+        .demon-log-lucky {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--warm-gray);
+        }
+
+        .demon-log-lucky input[type="checkbox"] {
+            margin-right: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -33,9 +107,7 @@
                             <th class="demon-number">5</th>
                             <th class="demon-number">6</th>
                             <th class="demon-number">7</th>
-                            <th class="demon-number">8</th>
-                            <th class="demon-number">9</th>
-                            <th class="stop-trading">⚠ STOP TRADING ⚠</th>
+                            <th class="stop-trading">STOP</th>
                         </tr>
                     </thead>
                     <tbody id="demonTableBody">
@@ -44,22 +116,33 @@
                 </table>
             </div>
         </div>
+
+        <div class="demon-log">
+            <div class="demon-log-header">
+                <span class="demon-log-title">Demon Log</span>
+                <span class="demon-counter">Demon Counter: <span id="log-counter">0</span></span>
+            </div>
+            <ul class="demon-log-list" id="demonLogList">
+                <!-- Log items will be added here dynamically -->
+            </ul>
+        </div>
     </div>
 
     <script>
         const mistakes = [
-            'POOR RISK/REWARD TRADE',
-            'ENTERED TOO SOON',
-            'ENTERED TOO LATE',
-            'EXITED TOO SOON',
-            'EXITED TOO LATE',
-            'TRADE NOT IN TRADING PLAN',
-            'INCORRECT STOP PLACEMENT',
-            'WRONG POSITION SIZE',
-            "DIDN'T TAKE PLANNED TRADE"
+            'Boredom Entry',
+            'FOMO Entry',
+            'Late Entry',
+            'Missed Entry',
+            'Poor RR',
+            'Added To Loser',
+            'Incorrect Size',
+            'Premature Exit',
+            'Late Exit'
         ];
 
         let mistakeCounts = {};
+        let demonLog = [];
 
         function initializeCounts() {
             mistakes.forEach(mistake => {
@@ -70,6 +153,56 @@
         function updateMistakeSummary() {
             const totalMistakes = Object.values(mistakeCounts).reduce((a, b) => a + b, 0);
             document.getElementById('mistake-summary').textContent = totalMistakes;
+            document.getElementById('log-counter').textContent = demonLog.length;
+        }
+
+        function getCurrentTime() {
+            return new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/New_York',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).format(new Date());
+        }
+
+        function addToLog(mistake) {
+            const logEntry = {
+                time: getCurrentTime(),
+                mistake: mistake,
+                lucky: false,
+                id: Date.now()
+            };
+            demonLog.unshift(logEntry);
+            updateLogDisplay();
+        }
+
+        function toggleLucky(id) {
+            const entry = demonLog.find(e => e.id === id);
+            if (entry) {
+                entry.lucky = !entry.lucky;
+            }
+        }
+
+        function updateLogDisplay() {
+            const logList = document.getElementById('demonLogList');
+            logList.innerHTML = '';
+
+            demonLog.forEach(entry => {
+                const li = document.createElement('li');
+                li.className = 'demon-log-item';
+                li.innerHTML = `
+                    <span class="demon-log-time">${entry.time}</span>
+                    <span class="demon-log-name">${entry.mistake}</span>
+                    <label class="demon-log-lucky">
+                        <input type="checkbox" 
+                               ${entry.lucky ? 'checked' : ''} 
+                               onchange="toggleLucky(${entry.id})">
+                        Lucky
+                    </label>
+                `;
+                logList.appendChild(li);
+            });
+            updateMistakeSummary();
         }
 
         function createTable() {
@@ -87,7 +220,7 @@
                 row.appendChild(mistakeCell);
 
                 // Count cells
-                for (let i = 0; i < 9; i++) {
+                for (let i = 0; i < 7; i++) {
                     const cell = document.createElement('td');
                     cell.className = 'checkmark';
                     cell.textContent = i < mistakeCounts[mistake] ? '✓' : '';
@@ -97,7 +230,7 @@
                 // Stop trading cell
                 const stopCell = document.createElement('td');
                 stopCell.className = 'stop-trading';
-                stopCell.textContent = mistakeCounts[mistake] >= 9 ? '⚠' : '';
+                stopCell.textContent = mistakeCounts[mistake] >= 7 ? '⚠' : '';
                 row.appendChild(stopCell);
 
                 tbody.appendChild(row);
@@ -107,8 +240,9 @@
         }
 
         function incrementCount(mistake) {
-            if (mistakeCounts[mistake] < 9) {
+            if (mistakeCounts[mistake] < 7) {
                 mistakeCounts[mistake]++;
+                addToLog(mistake);
                 createTable();
             }
         }
@@ -117,18 +251,13 @@
             mistakes.forEach(mistake => {
                 mistakeCounts[mistake] = 0;
             });
+            demonLog = [];
             createTable();
+            updateLogDisplay();
         }
 
         function updateTime() {
-            const now = new Date();
-            const et = new Intl.DateTimeFormat('en-US', {
-                timeZone: 'America/New_York',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            }).format(now);
-            document.getElementById('current-time').textContent = `${et} ET`;
+            document.getElementById('current-time').textContent = `${getCurrentTime()} ET`;
         }
 
         // Initialize the application
