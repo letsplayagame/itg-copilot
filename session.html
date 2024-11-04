@@ -26,20 +26,20 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
         }
         .points-display {
             text-align: center;
-            padding: 20px;
+            padding: 10px;
             font-size: 2em;
             font-weight: bold;
         }
         .points-message {
             text-align: center;
-            padding: 15px;
+            padding: 8px;
             font-size: 1.2em;
             font-weight: 500;
-            margin: 10px 0;
+            margin: 5px 0;
             border-radius: 4px;
             transition: all 0.3s ease;
         }
@@ -63,10 +63,10 @@
         .points-negative { color: var(--status-red); }
         .table-header {
             text-align: center;
-            font-size: 1.8em;
+            font-size: 1.5em;
             font-weight: bold;
-            margin: 30px 0 15px;
-            padding: 10px;
+            margin: 15px 0 5px;
+            padding: 5 px;
             background: #f8f8f8;
             border-radius: 4px;
             display: flex;
@@ -87,7 +87,7 @@
         .angels-table th, .demons-table th,
         .angels-table td, .demons-table td {
             border: 1px solid #ddd;
-            padding: 12px;
+            padding: 6px;
         }
         .angels-table th, .demons-table th {
             background-color: #f8f8f8;
@@ -96,7 +96,7 @@
         }
         .action-cell {
             font-weight: 500;
-            padding: 12px 20px;
+            padding: 6px 12px;
              white-space: nowrap;       /* Prevents text wrapping */
     overflow: hidden;          /* Hides overflow content */
     text-overflow: ellipsis;
@@ -123,7 +123,8 @@
 }
         
         .checkmark-cell {
-            width: 40px;
+            width: 32px;
+            height: 24px;
             text-align: center;
             cursor: pointer;
             transition: background-color 0.2s;
@@ -221,12 +222,6 @@
             <span class="emoji">👼</span>
         </div>
         <table class="angels-table">
-            <thead>
-                <tr>
-                    <th>Action</th>
-                    <th colspan="12">Progress</th>
-                </tr>
-            </thead>
             <tbody id="angelsTableBody">
             </tbody>
         </table>
@@ -237,12 +232,7 @@
             <span class="emoji">😈</span>
         </div>
         <table class="demons-table">
-            <thead>
-                <tr>
-                    <th>Action</th>
-                    <th colspan="6">Progress</th>
-                </tr>
-            </thead>
+         
             <tbody id="demonsTableBody">
             </tbody>
         </table>
