@@ -97,7 +97,31 @@
         .action-cell {
             font-weight: 500;
             padding: 12px 20px;
+             white-space: nowrap;       /* Prevents text wrapping */
+    overflow: hidden;          /* Hides overflow content */
+    text-overflow: ellipsis;
         }
+        .angels-table .action-cell {
+    max-width: 200px;          /* Adjust this value as needed */
+}
+
+        .angels-table .action-cell:hover {
+    position: relative;
+}
+
+.angels-table .action-cell:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background: white;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+        
         .checkmark-cell {
             width: 40px;
             text-align: center;
@@ -330,6 +354,7 @@ function createAngelsTable() {
         const actionCell = document.createElement('td');
         actionCell.className = 'action-cell clickable';
         actionCell.textContent = `${angel.name} (${angel.multiplier})`;
+        actionCell.title = `${angel.name} (${angel.multiplier})`; 
         actionCell.onclick = () => markAngel(rowIndex);
         row.appendChild(actionCell);
 
