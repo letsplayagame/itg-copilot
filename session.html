@@ -15,7 +15,6 @@
             --status-yellow: #D4B483;
             --status-red: #C1666B;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
@@ -24,20 +23,17 @@
             color: var(--dark-gray);
             line-height: 1.6;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-
         .points-display {
             text-align: center;
             padding: 20px;
             font-size: 2em;
             font-weight: bold;
         }
-
         .points-message {
             text-align: center;
             padding: 15px;
@@ -47,35 +43,24 @@
             border-radius: 4px;
             transition: all 0.3s ease;
         }
-
         .message-warning {
             background: rgba(193, 102, 107, 0.1);
             color: var(--status-red);
         }
-
         .message-success {
             background: rgba(127, 160, 132, 0.1);
             color: var(--status-green);
         }
-
         .message-danger {
             background: var(--status-red);
             color: white;
             animation: blink 1s infinite;
         }
-
         @keyframes blink {
             50% { opacity: 0.8; }
         }
-
-        .points-positive {
-            color: var(--status-green);
-        }
-
-        .points-negative {
-            color: var(--status-red);
-        }
-
+        .points-positive { color: var(--status-green); }
+        .points-negative { color: var(--status-red); }
         .table-header {
             text-align: center;
             font-size: 1.8em;
@@ -89,11 +74,7 @@
             align-items: center;
             gap: 15px;
         }
-
-        .table-header .emoji {
-            font-size: 1.2em;
-        }
-
+        .table-header .emoji { font-size: 1.2em; }
         .angels-table, .demons-table {
             width: 100%;
             margin-bottom: 20px;
@@ -103,50 +84,38 @@
             border-radius: 8px;
             overflow: hidden;
         }
-
         .angels-table th, .demons-table th,
         .angels-table td, .demons-table td {
             border: 1px solid #ddd;
             padding: 12px;
         }
-
         .angels-table th, .demons-table th {
             background-color: #f8f8f8;
             text-align: center;
             font-weight: 600;
         }
-
         .action-cell {
             font-weight: 500;
             padding: 12px 20px;
         }
-
         .checkmark-cell {
             width: 40px;
             text-align: center;
             cursor: pointer;
             transition: background-color 0.2s;
         }
-
-        .checkmark-cell:hover {
-            background-color: #f5f5f5;
-        }
-
+        .checkmark-cell:hover { background-color: #f5f5f5; }
         .checkmark-cell.marked {
             background-color: var(--primary-green);
             color: white;
         }
-
         .checkmark-cell.disabled {
             background-color: #f5f5f5;
             cursor: not-allowed;
         }
-
         .row-limit-reached {
             background-color: rgba(193, 102, 107, 0.2);
         }
-
-        /* Trading Log Styles */
         .trading-log {
             width: 100%;
             background: white;
@@ -155,7 +124,6 @@
             margin-top: 30px;
             padding: 20px;
         }
-
         .log-header {
             display: flex;
             justify-content: space-between;
@@ -164,19 +132,16 @@
             padding-bottom: 10px;
             border-bottom: 2px solid #eee;
         }
-
         .log-title {
             font-size: 1.4em;
             font-weight: 600;
         }
-
         .log-list {
             list-style: none;
             padding: 0;
             margin: 0;
             width: 100%;
         }
-
         .log-item {
             display: grid;
             grid-template-columns: 80px 30px auto 300px 100px;
@@ -185,17 +150,14 @@
             padding: 10px;
             border-bottom: 1px solid #eee;
         }
-
         .log-time {
             color: var(--warm-gray);
             font-size: 0.9em;
         }
-
         .log-emoji {
             font-size: 1.2em;
             text-align: center;
         }
-
         .log-note {
             padding: 5px 10px;
             border: 1px solid #ddd;
@@ -203,29 +165,24 @@
             font-size: 0.9em;
             width: 100%;
         }
-
         .log-checkbox {
             display: flex;
             align-items: center;
             gap: 5px;
             justify-content: flex-end;
         }
-
-        .log-checkbox input {
-            margin: 0;
-        }
+        .log-checkbox input { margin: 0; }
     </style>
 </head>
-<body>
+
+    <body>
     <div class="container">
-        <!-- Points Display -->
         <div class="points-display">
             Points: <span id="pointsValue" class="points-positive">0</span>
             <span id="moneySymbols"></span>
         </div>
         <div id="pointsMessage" class="points-message"></div>
 
-        <!-- Angels Section -->
         <div class="table-header">
             <span class="emoji">👼</span>
             ANGELS
@@ -239,11 +196,9 @@
                 </tr>
             </thead>
             <tbody id="angelsTableBody">
-                <!-- Will be populated by JavaScript -->
             </tbody>
         </table>
 
-        <!-- Demons Section -->
         <div class="table-header">
             <span class="emoji">😈</span>
             DEMONS
@@ -257,24 +212,20 @@
                 </tr>
             </thead>
             <tbody id="demonsTableBody">
-                <!-- Will be populated by JavaScript -->
             </tbody>
         </table>
 
-        <!-- Trading Log -->
         <div class="trading-log">
             <div class="log-header">
                 <span class="log-title">Trading Log</span>
                 <span>Total Events: <span id="log-counter">0</span></span>
             </div>
             <div class="log-list" id="tradingLogList">
-                <!-- Will be populated by JavaScript -->
             </div>
         </div>
     </div>
 
     <script>
-        // Data Structures
         const angels = [
             { name: 'Fantastic Entry', multiplier: 3, maxCells: 12, marks: 0 },
             { name: 'Textbook Setup', multiplier: 2, maxCells: 12, marks: 0 },
@@ -296,10 +247,6 @@
         let totalPoints = 0;
         let previousPoints = 0;
 
-
-        // Continue after the previous script section...
-
-        // Points System Messages
         const pointsMessages = {
             '-18': { text: 'Margin called, they want their account back', class: 'message-danger' },
             '-12': { text: 'Today is not the day. Stop trading!', class: 'message-danger' },
@@ -309,7 +256,6 @@
             '18': { text: 'Taxman will be rich', class: 'message-success' }
         };
 
-        // Utility Functions
         function getCurrentTime() {
             return new Intl.DateTimeFormat('en-US', {
                 timeZone: 'America/New_York',
@@ -319,7 +265,6 @@
             }).format(new Date());
         }
 
-        // Points Management
         function updatePoints(value) {
             previousPoints = totalPoints;
             totalPoints += value;
@@ -335,7 +280,6 @@
         function updatePointsMessage() {
             const messageDiv = document.getElementById('pointsMessage');
             
-            // Check for zero crossing messages
             if (totalPoints === 0) {
                 if (previousPoints < 0) {
                     messageDiv.textContent = "Back in business!";
@@ -348,7 +292,6 @@
                 }
             }
 
-            // Check for threshold messages
             for (const threshold of [-18, -12, -6, 6, 12, 18]) {
                 if (
                     (previousPoints < threshold && totalPoints >= threshold) ||
@@ -369,7 +312,6 @@
             symbolsSpan.textContent = '💰'.repeat(moneyCount);
         }
 
-        // Table Creation
         function createAngelsTable() {
             const tbody = document.getElementById('angelsTableBody');
             tbody.innerHTML = '';
@@ -377,13 +319,11 @@
             angels.forEach((angel, rowIndex) => {
                 const row = document.createElement('tr');
                 
-                // Action cell
                 const actionCell = document.createElement('td');
                 actionCell.className = 'action-cell';
                 actionCell.textContent = `${angel.name} (${angel.multiplier})`;
                 row.appendChild(actionCell);
 
-                // Checkmark cells
                 for (let i = 0; i < angel.maxCells; i++) {
                     const cell = document.createElement('td');
                     cell.className = 'checkmark-cell';
@@ -404,13 +344,11 @@
                 const row = document.createElement('tr');
                 row.className = demon.marks >= demon.maxCells ? 'row-limit-reached' : '';
                 
-                // Action cell
                 const actionCell = document.createElement('td');
                 actionCell.className = 'action-cell';
                 actionCell.textContent = `${demon.name} (${demon.multiplier})`;
                 row.appendChild(actionCell);
 
-                // Create cells based on maxCells
                 for (let i = 0; i < 6; i++) {
                     const cell = document.createElement('td');
                     if (i < demon.maxCells) {
@@ -427,7 +365,6 @@
             });
         }
 
-        // Marking Functions
         function markAngel(rowIndex, cellIndex) {
             const angel = angels[rowIndex];
             if (cellIndex === angel.marks && cellIndex < angel.maxCells) {
@@ -448,7 +385,6 @@
             }
         }
 
-        // Log Management
         function addToLog(action, isAngel) {
             const logEntry = {
                 time: getCurrentTime(),
@@ -505,7 +441,6 @@
             }
         }
 
-        // Reset Function
         function resetAll() {
             angels.forEach(angel => angel.marks = 0);
             demons.forEach(demon => demon.marks = 0);
@@ -519,45 +454,12 @@
             updatePoints(0);
         }
 
-        // Initialize everything
         document.addEventListener('DOMContentLoaded', () => {
             createAngelsTable();
             createDemonsTable();
             updateLogDisplay();
             updatePoints(0);
         });
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     </script>
 </body>
 </html>
