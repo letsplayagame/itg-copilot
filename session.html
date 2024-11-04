@@ -6,265 +6,168 @@
     <title>ITG CoPilot - Trading Session</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* Additional styles for demon log */
-        .demon-log {
-            margin-top: 30px;
-            background: white;
-            border-radius: 8px;
+        .points-display {
+            text-align: center;
             padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 2em;
+            font-weight: bold;
         }
 
-        .demon-log-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
+        .points-positive {
+            color: var(--status-green);
         }
 
-        .demon-log-title {
-            font-size: 1.2em;
-            font-weight: 600;
+        .points-negative {
             color: var(--status-red);
         }
 
-        .demon-counter {
+        .halt-operations {
             background: var(--status-red);
             color: white;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-weight: 500;
-        }
-
-        .demon-log-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .demon-log-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             padding: 10px;
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.2s;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 10px 0;
+            animation: blink 1s infinite;
         }
 
-        .demon-log-item:hover {
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        .angels-table, .demons-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .angels-table th, .demons-table th {
             background-color: #f8f8f8;
+            padding: 12px;
+            text-align: center;
         }
 
-        .demon-log-time {
-            color: var(--warm-gray);
-            font-size: 0.9em;
-            width: 80px;
+        .table-title {
+            font-size: 1.5em;
+            margin: 20px 0 10px;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 4px;
         }
 
-        .demon-log-name {
-            flex-grow: 1;
-            margin: 0 20px;
+        .cell-disabled {
+            background-color: #f5f5f5;
+            color: #ccc;
         }
 
-        .demon-log-lucky {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: var(--warm-gray);
+        .row-limit-reached {
+            background-color: rgba(193, 102, 107, 0.2);
         }
 
-        .demon-log-lucky input[type="checkbox"] {
-            margin-right: 5px;
+        .checkmark-cell {
+            width: 40px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .log-note {
+            width: 256px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .entity-emoji {
+            font-size: 1.2em;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="demon-finder">
-            <div class="header">
-                <h1 class="title">DEMON FINDER</h1>
-                <div class="time-section">
-                    <div id="current-time" class="time">
-                        15:20 ET
-                    </div>
-                </div>
-                <button class="reset-btn" onclick="resetCounts()">Reset</button>
-            </div>
-            <div class="summary-bar">
-                Total mistakes today: <span id="mistake-summary">0</span>
-            </div>
-            <div class="table-container">
-                <table id="demonTable">
-                    <thead>
-                        <tr>
-                            <th>DEMON #</th>
-                            <th class="demon-number">1</th>
-                            <th class="demon-number">2</th>
-                            <th class="demon-number">3</th>
-                            <th class="demon-number">4</th>
-                            <th class="demon-number">5</th>
-                            <th class="demon-number">6</th>
-                            <th class="demon-number">7</th>
-                            <th class="stop-trading">STOP</th>
-                        </tr>
-                    </thead>
-                    <tbody id="demonTableBody">
-                        <!-- Rows will be populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+        <!-- Points Display -->
+        <div class="points-display" id="pointsDisplay">
+            Points: <span class="points-positive">0</span>
+            <span id="statusSymbols"></span>
         </div>
 
+        <!-- Angels Table -->
+        <h2 class="table-title">Angels</h2>
+        <table class="angels-table">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th colspan="12">Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-multiplier="3">
+                    <td>Fantastic Entry (3)</td>
+                    <td class="checkmark-cell" onclick="markAngel(0,0)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,1)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,2)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,3)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,4)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,5)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,6)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,7)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,8)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,9)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,10)"></td>
+                    <td class="checkmark-cell" onclick="markAngel(0,11)"></td>
+                </tr>
+                <!-- More angel rows... -->
+            </tbody>
+        </table>
+
+        <!-- Demons Table -->
+        <h2 class="table-title">Demons</h2>
+        <table class="demons-table">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th colspan="6">Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-multiplier="1">
+                    <td>FOMO/Chase Entry (1)</td>
+                    <td class="checkmark-cell" onclick="markDemon(0,0)"></td>
+                    <td class="checkmark-cell" onclick="markDemon(0,1)"></td>
+                    <td class="checkmark-cell" onclick="markDemon(0,2)"></td>
+                    <td class="checkmark-cell" onclick="markDemon(0,3)"></td>
+                    <td class="checkmark-cell" onclick="markDemon(0,4)"></td>
+                    <td class="checkmark-cell" onclick="markDemon(0,5)"></td>
+                </tr>
+                <!-- More demon rows... -->
+            </tbody>
+        </table>
+
+        <!-- Log Section -->
         <div class="demon-log">
             <div class="demon-log-header">
-                <span class="demon-log-title">Demon Log</span>
-                <span class="demon-counter">Demon Counter: <span id="log-counter">0</span></span>
+                <span class="demon-log-title">Trading Log</span>
+                <span class="demon-counter">Total Events: <span id="log-counter">0</span></span>
             </div>
-            <ul class="demon-log-list" id="demonLogList">
-                <!-- Log items will be added here dynamically -->
+            <ul class="demon-log-list" id="tradingLogList">
+                <!-- Example log item -->
+                <li class="demon-log-item">
+                    <span class="demon-log-time">15:20 ET</span>
+                    <span class="entity-emoji">😈</span>
+                    <span class="demon-log-name">FOMO Entry</span>
+                    <input type="text" class="log-note" placeholder="Add note..." maxlength="256">
+                    <label class="demon-log-lucky">
+                        <input type="checkbox">
+                        Lucky
+                    </label>
+                </li>
             </ul>
         </div>
     </div>
 
     <script>
-        const mistakes = [
-            'Boredom Entry',
-            'FOMO Entry',
-            'Late Entry',
-            'Missed Entry',
-            'Poor RR',
-            'Added To Loser',
-            'Incorrect Size',
-            'Premature Exit',
-            'Late Exit'
-        ];
-
-        let mistakeCounts = {};
-        let demonLog = [];
-
-        function initializeCounts() {
-            mistakes.forEach(mistake => {
-                mistakeCounts[mistake] = 0;
-            });
-        }
-
-        function updateMistakeSummary() {
-            const totalMistakes = Object.values(mistakeCounts).reduce((a, b) => a + b, 0);
-            document.getElementById('mistake-summary').textContent = totalMistakes;
-            document.getElementById('log-counter').textContent = demonLog.length;
-        }
-
-        function getCurrentTime() {
-            return new Intl.DateTimeFormat('en-US', {
-                timeZone: 'America/New_York',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            }).format(new Date());
-        }
-
-        function addToLog(mistake) {
-            const logEntry = {
-                time: getCurrentTime(),
-                mistake: mistake,
-                lucky: false,
-                id: Date.now()
-            };
-            demonLog.unshift(logEntry);
-            updateLogDisplay();
-        }
-
-        function toggleLucky(id) {
-            const entry = demonLog.find(e => e.id === id);
-            if (entry) {
-                entry.lucky = !entry.lucky;
-            }
-        }
-
-        function updateLogDisplay() {
-            const logList = document.getElementById('demonLogList');
-            logList.innerHTML = '';
-
-            demonLog.forEach(entry => {
-                const li = document.createElement('li');
-                li.className = 'demon-log-item';
-                li.innerHTML = `
-                    <span class="demon-log-time">${entry.time}</span>
-                    <span class="demon-log-name">${entry.mistake}</span>
-                    <label class="demon-log-lucky">
-                        <input type="checkbox" 
-                               ${entry.lucky ? 'checked' : ''} 
-                               onchange="toggleLucky(${entry.id})">
-                        Lucky
-                    </label>
-                `;
-                logList.appendChild(li);
-            });
-            updateMistakeSummary();
-        }
-
-        function createTable() {
-            const tbody = document.getElementById('demonTableBody');
-            tbody.innerHTML = '';
-            
-            mistakes.forEach(mistake => {
-                const row = document.createElement('tr');
-                
-                // Mistake name cell
-                const mistakeCell = document.createElement('td');
-                mistakeCell.className = 'mistake-cell';
-                mistakeCell.textContent = mistake;
-                mistakeCell.onclick = () => incrementCount(mistake);
-                row.appendChild(mistakeCell);
-
-                // Count cells
-                for (let i = 0; i < 7; i++) {
-                    const cell = document.createElement('td');
-                    cell.className = 'checkmark';
-                    cell.textContent = i < mistakeCounts[mistake] ? '✓' : '';
-                    row.appendChild(cell);
-                }
-
-                // Stop trading cell
-                const stopCell = document.createElement('td');
-                stopCell.className = 'stop-trading';
-                stopCell.textContent = mistakeCounts[mistake] >= 7 ? '⚠' : '';
-                row.appendChild(stopCell);
-
-                tbody.appendChild(row);
-            });
-            
-            updateMistakeSummary();
-        }
-
-        function incrementCount(mistake) {
-            if (mistakeCounts[mistake] < 7) {
-                mistakeCounts[mistake]++;
-                addToLog(mistake);
-                createTable();
-            }
-        }
-
-        function resetCounts() {
-            mistakes.forEach(mistake => {
-                mistakeCounts[mistake] = 0;
-            });
-            demonLog = [];
-            createTable();
-            updateLogDisplay();
-        }
-
-        function updateTime() {
-            document.getElementById('current-time').textContent = `${getCurrentTime()} ET`;
-        }
-
-        // Initialize the application
-        initializeCounts();
-        createTable();
-        setInterval(updateTime, 1000);
-        updateTime();
+        // Initial prototype JavaScript will go here
+        // This will be expanded in the next iteration
     </script>
 </body>
 </html>
