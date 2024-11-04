@@ -4,13 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ITG CoPilot - Trading Session</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
+        :root {
+            --primary-green: #8BA888;
+            --warm-gray: #9B8E83;
+            --terra-cotta: #E2725B;
+            --light-sand: #F4F1EA;
+            --dark-gray: #2C3639;
+            --status-green: #7FA084;
+            --status-yellow: #D4B483;
+            --status-red: #C1666B;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: var(--light-sand);
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
         .points-display {
             text-align: center;
             padding: 20px;
             font-size: 2em;
             font-weight: bold;
+        }
+
+        .points-message {
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: 500;
+            margin: 10px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .message-warning {
+            background: rgba(193, 102, 107, 0.1);
+            color: var(--status-red);
+        }
+
+        .message-success {
+            background: rgba(127, 160, 132, 0.1);
+            color: var(--status-green);
+        }
+
+        .message-danger {
+            background: var(--status-red);
+            color: white;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.8; }
         }
 
         .points-positive {
@@ -21,78 +76,161 @@
             color: var(--status-red);
         }
 
-        .halt-operations {
-            background: var(--status-red);
-            color: white;
-            padding: 10px;
+        .table-header {
             text-align: center;
-            font-size: 1.5em;
+            font-size: 1.8em;
             font-weight: bold;
-            margin: 10px 0;
-            animation: blink 1s infinite;
+            margin: 30px 0 15px;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
         }
 
-        @keyframes blink {
-            50% { opacity: 0.5; }
+        .table-header .emoji {
+            font-size: 1.2em;
         }
 
         .angels-table, .demons-table {
             width: 100%;
             margin-bottom: 20px;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .angels-table th, .demons-table th,
+        .angels-table td, .demons-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
         }
 
         .angels-table th, .demons-table th {
             background-color: #f8f8f8;
-            padding: 12px;
             text-align: center;
+            font-weight: 600;
         }
 
-        .table-title {
-            font-size: 1.5em;
-            margin: 20px 0 10px;
-            padding: 10px;
-            background: #f8f8f8;
-            border-radius: 4px;
-        }
-
-        .cell-disabled {
-            background-color: #f5f5f5;
-            color: #ccc;
-        }
-
-        .row-limit-reached {
-            background-color: rgba(193, 102, 107, 0.2);
+        .action-cell {
+            font-weight: 500;
+            padding: 12px 20px;
         }
 
         .checkmark-cell {
             width: 40px;
             text-align: center;
             cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .checkmark-cell:hover {
+            background-color: #f5f5f5;
+        }
+
+        .checkmark-cell.marked {
+            background-color: var(--primary-green);
+            color: white;
+        }
+
+        .checkmark-cell.disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .row-limit-reached {
+            background-color: rgba(193, 102, 107, 0.2);
+        }
+
+        /* Trading Log Styles */
+        .trading-log {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            padding: 20px;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .log-title {
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .log-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        .log-item {
+            display: grid;
+            grid-template-columns: 80px 30px auto 300px 100px;
+            gap: 15px;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .log-time {
+            color: var(--warm-gray);
+            font-size: 0.9em;
+        }
+
+        .log-emoji {
+            font-size: 1.2em;
+            text-align: center;
         }
 
         .log-note {
-            width: 256px;
-            padding: 5px;
+            padding: 5px 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 0.9em;
+            width: 100%;
         }
 
-        .entity-emoji {
-            font-size: 1.2em;
-            margin-right: 10px;
+        .log-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: flex-end;
+        }
+
+        .log-checkbox input {
+            margin: 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Points Display -->
-        <div class="points-display" id="pointsDisplay">
-            Points: <span class="points-positive">0</span>
-            <span id="statusSymbols"></span>
+        <div class="points-display">
+            Points: <span id="pointsValue" class="points-positive">0</span>
+            <span id="moneySymbols"></span>
         </div>
+        <div id="pointsMessage" class="points-message"></div>
 
-        <!-- Angels Table -->
-        <h2 class="table-title">Angels</h2>
+        <!-- Angels Section -->
+        <div class="table-header">
+            <span class="emoji">👼</span>
+            ANGELS
+            <span class="emoji">👼</span>
+        </div>
         <table class="angels-table">
             <thead>
                 <tr>
@@ -100,28 +238,17 @@
                     <th colspan="12">Progress</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr data-multiplier="3">
-                    <td>Fantastic Entry (3)</td>
-                    <td class="checkmark-cell" onclick="markAngel(0,0)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,1)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,2)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,3)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,4)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,5)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,6)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,7)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,8)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,9)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,10)"></td>
-                    <td class="checkmark-cell" onclick="markAngel(0,11)"></td>
-                </tr>
-                <!-- More angel rows... -->
+            <tbody id="angelsTableBody">
+                <!-- Will be populated by JavaScript -->
             </tbody>
         </table>
 
-        <!-- Demons Table -->
-        <h2 class="table-title">Demons</h2>
+        <!-- Demons Section -->
+        <div class="table-header">
+            <span class="emoji">😈</span>
+            DEMONS
+            <span class="emoji">😈</span>
+        </div>
         <table class="demons-table">
             <thead>
                 <tr>
@@ -129,45 +256,308 @@
                     <th colspan="6">Progress</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr data-multiplier="1">
-                    <td>FOMO/Chase Entry (1)</td>
-                    <td class="checkmark-cell" onclick="markDemon(0,0)"></td>
-                    <td class="checkmark-cell" onclick="markDemon(0,1)"></td>
-                    <td class="checkmark-cell" onclick="markDemon(0,2)"></td>
-                    <td class="checkmark-cell" onclick="markDemon(0,3)"></td>
-                    <td class="checkmark-cell" onclick="markDemon(0,4)"></td>
-                    <td class="checkmark-cell" onclick="markDemon(0,5)"></td>
-                </tr>
-                <!-- More demon rows... -->
+            <tbody id="demonsTableBody">
+                <!-- Will be populated by JavaScript -->
             </tbody>
         </table>
 
-        <!-- Log Section -->
-        <div class="demon-log">
-            <div class="demon-log-header">
-                <span class="demon-log-title">Trading Log</span>
-                <span class="demon-counter">Total Events: <span id="log-counter">0</span></span>
+        <!-- Trading Log -->
+        <div class="trading-log">
+            <div class="log-header">
+                <span class="log-title">Trading Log</span>
+                <span>Total Events: <span id="log-counter">0</span></span>
             </div>
-            <ul class="demon-log-list" id="tradingLogList">
-                <!-- Example log item -->
-                <li class="demon-log-item">
-                    <span class="demon-log-time">15:20 ET</span>
-                    <span class="entity-emoji">😈</span>
-                    <span class="demon-log-name">FOMO Entry</span>
-                    <input type="text" class="log-note" placeholder="Add note..." maxlength="256">
-                    <label class="demon-log-lucky">
-                        <input type="checkbox">
-                        Lucky
-                    </label>
-                </li>
-            </ul>
+            <div class="log-list" id="tradingLogList">
+                <!-- Will be populated by JavaScript -->
+            </div>
         </div>
     </div>
 
     <script>
-        // Initial prototype JavaScript will go here
-        // This will be expanded in the next iteration
+        // Data Structures
+        const angels = [
+            { name: 'Fantastic Entry', multiplier: 3, maxCells: 12, marks: 0 },
+            { name: 'Textbook Setup', multiplier: 2, maxCells: 12, marks: 0 },
+            { name: 'Sit on Hands', multiplier: 1, maxCells: 12, marks: 0 }
+        ];
+
+        const demons = [
+            { name: 'FOMO/Chase Entry', multiplier: 1, maxCells: 6, marks: 0 },
+            { name: 'Boredom/No Setup Entry', multiplier: 2, maxCells: 3, marks: 0 },
+            { name: 'Hesitated/Missed Entry', multiplier: 1, maxCells: 6, marks: 0 },
+            { name: 'Missed Critical Signal', multiplier: 1, maxCells: 6, marks: 0 },
+            { name: 'Poor RR', multiplier: 1, maxCells: 6, marks: 0 },
+            { name: 'Let a big loser', multiplier: 3, maxCells: 2, marks: 0 },
+            { name: 'Premature Exit', multiplier: 1, maxCells: 6, marks: 0 },
+            { name: 'Late Exit', multiplier: 1, maxCells: 6, marks: 0 }
+        ];
+
+        let tradingLog = [];
+        let totalPoints = 0;
+        let previousPoints = 0;
+
+
+        // Continue after the previous script section...
+
+        // Points System Messages
+        const pointsMessages = {
+            '-18': { text: 'Margin called, they want their account back', class: 'message-danger' },
+            '-12': { text: 'Today is not the day. Stop trading!', class: 'message-danger' },
+            '-6': { text: 'P&L in danger. Take a break!', class: 'message-warning' },
+            '6': { text: 'Good job! You are killing it', class: 'message-success' },
+            '12': { text: 'Hey leave some money for the others', class: 'message-success' },
+            '18': { text: 'Taxman will be rich', class: 'message-success' }
+        };
+
+        // Utility Functions
+        function getCurrentTime() {
+            return new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/New_York',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).format(new Date());
+        }
+
+        // Points Management
+        function updatePoints(value) {
+            previousPoints = totalPoints;
+            totalPoints += value;
+            
+            const pointsDisplay = document.getElementById('pointsValue');
+            pointsDisplay.textContent = totalPoints;
+            pointsDisplay.className = totalPoints >= 0 ? 'points-positive' : 'points-negative';
+
+            updatePointsMessage();
+            updateMoneySymbols();
+        }
+
+        function updatePointsMessage() {
+            const messageDiv = document.getElementById('pointsMessage');
+            
+            // Check for zero crossing messages
+            if (totalPoints === 0) {
+                if (previousPoints < 0) {
+                    messageDiv.textContent = "Back in business!";
+                    messageDiv.className = "points-message message-success";
+                    return;
+                } else if (previousPoints > 0) {
+                    messageDiv.textContent = "Bro, what's happening?";
+                    messageDiv.className = "points-message message-warning";
+                    return;
+                }
+            }
+
+            // Check for threshold messages
+            for (const threshold of [-18, -12, -6, 6, 12, 18]) {
+                if (
+                    (previousPoints < threshold && totalPoints >= threshold) ||
+                    (previousPoints >= threshold && totalPoints < threshold)
+                ) {
+                    if (pointsMessages[threshold]) {
+                        messageDiv.textContent = pointsMessages[threshold].text;
+                        messageDiv.className = `points-message ${pointsMessages[threshold].class}`;
+                        return;
+                    }
+                }
+            }
+        }
+
+        function updateMoneySymbols() {
+            const symbolsSpan = document.getElementById('moneySymbols');
+            const moneyCount = Math.floor(Math.max(0, totalPoints) / 6);
+            symbolsSpan.textContent = '💰'.repeat(moneyCount);
+        }
+
+        // Table Creation
+        function createAngelsTable() {
+            const tbody = document.getElementById('angelsTableBody');
+            tbody.innerHTML = '';
+
+            angels.forEach((angel, rowIndex) => {
+                const row = document.createElement('tr');
+                
+                // Action cell
+                const actionCell = document.createElement('td');
+                actionCell.className = 'action-cell';
+                actionCell.textContent = `${angel.name} (${angel.multiplier})`;
+                row.appendChild(actionCell);
+
+                // Checkmark cells
+                for (let i = 0; i < angel.maxCells; i++) {
+                    const cell = document.createElement('td');
+                    cell.className = 'checkmark-cell';
+                    cell.textContent = i < angel.marks ? '✓' : '';
+                    cell.onclick = () => markAngel(rowIndex, i);
+                    row.appendChild(cell);
+                }
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function createDemonsTable() {
+            const tbody = document.getElementById('demonsTableBody');
+            tbody.innerHTML = '';
+
+            demons.forEach((demon, rowIndex) => {
+                const row = document.createElement('tr');
+                row.className = demon.marks >= demon.maxCells ? 'row-limit-reached' : '';
+                
+                // Action cell
+                const actionCell = document.createElement('td');
+                actionCell.className = 'action-cell';
+                actionCell.textContent = `${demon.name} (${demon.multiplier})`;
+                row.appendChild(actionCell);
+
+                // Create cells based on maxCells
+                for (let i = 0; i < 6; i++) {
+                    const cell = document.createElement('td');
+                    if (i < demon.maxCells) {
+                        cell.className = 'checkmark-cell';
+                        cell.textContent = i < demon.marks ? '✓' : '';
+                        cell.onclick = () => markDemon(rowIndex, i);
+                    } else {
+                        cell.className = 'checkmark-cell disabled';
+                    }
+                    row.appendChild(cell);
+                }
+
+                tbody.appendChild(row);
+            });
+        }
+
+        // Marking Functions
+        function markAngel(rowIndex, cellIndex) {
+            const angel = angels[rowIndex];
+            if (cellIndex === angel.marks && cellIndex < angel.maxCells) {
+                angel.marks++;
+                updatePoints(angel.multiplier);
+                addToLog(angel.name, true);
+                createAngelsTable();
+            }
+        }
+
+        function markDemon(rowIndex, cellIndex) {
+            const demon = demons[rowIndex];
+            if (cellIndex === demon.marks && cellIndex < demon.maxCells) {
+                demon.marks++;
+                updatePoints(-demon.multiplier);
+                addToLog(demon.name, false);
+                createDemonsTable();
+            }
+        }
+
+        // Log Management
+        function addToLog(action, isAngel) {
+            const logEntry = {
+                time: getCurrentTime(),
+                action: action,
+                isAngel: isAngel,
+                lucky: false,
+                note: '',
+                id: Date.now()
+            };
+            
+            tradingLog.unshift(logEntry);
+            updateLogDisplay();
+        }
+
+        function updateLogDisplay() {
+            const logList = document.getElementById('tradingLogList');
+            logList.innerHTML = '';
+            document.getElementById('log-counter').textContent = tradingLog.length;
+
+            tradingLog.forEach(entry => {
+                const logItem = document.createElement('div');
+                logItem.className = 'log-item';
+                logItem.innerHTML = `
+                    <span class="log-time">${entry.time}</span>
+                    <span class="log-emoji">${entry.isAngel ? '👼' : '😈'}</span>
+                    <span class="log-name">${entry.action}</span>
+                    <input type="text" class="log-note" 
+                           placeholder="Add note..." 
+                           maxlength="256"
+                           value="${entry.note}"
+                           onchange="updateLogNote(${entry.id}, this.value)">
+                    <label class="log-checkbox">
+                        <input type="checkbox" 
+                               ${entry.lucky ? 'checked' : ''}
+                               onchange="updateLogLucky(${entry.id}, this.checked)">
+                        ${entry.isAngel ? 'Unlucky' : 'Lucky'}
+                    </label>
+                `;
+                logList.appendChild(logItem);
+            });
+        }
+
+        function updateLogNote(id, note) {
+            const entry = tradingLog.find(e => e.id === id);
+            if (entry) {
+                entry.note = note;
+            }
+        }
+
+        function updateLogLucky(id, lucky) {
+            const entry = tradingLog.find(e => e.id === id);
+            if (entry) {
+                entry.lucky = lucky;
+            }
+        }
+
+        // Reset Function
+        function resetAll() {
+            angels.forEach(angel => angel.marks = 0);
+            demons.forEach(demon => demon.marks = 0);
+            tradingLog = [];
+            totalPoints = 0;
+            previousPoints = 0;
+            
+            createAngelsTable();
+            createDemonsTable();
+            updateLogDisplay();
+            updatePoints(0);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            createAngelsTable();
+            createDemonsTable();
+            updateLogDisplay();
+            updatePoints(0);
+        });
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     </script>
 </body>
 </html>
