@@ -172,6 +172,14 @@
             justify-content: flex-end;
         }
         .log-checkbox input { margin: 0; }
+        .action-cell.clickable {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.action-cell.clickable:hover {
+    background-color: #f5f5f5;
+}
     </style>
 </head>
 
@@ -312,78 +320,95 @@
             symbolsSpan.textContent = '💰'.repeat(moneyCount);
         }
 
-        function createAngelsTable() {
-            const tbody = document.getElementById('angelsTableBody');
-            tbody.innerHTML = '';
+function createAngelsTable() {
+    const tbody = document.getElementById('angelsTableBody');
+    tbody.innerHTML = '';
 
-            angels.forEach((angel, rowIndex) => {
-                const row = document.createElement('tr');
-                
-                const actionCell = document.createElement('td');
-                actionCell.className = 'action-cell';
-                actionCell.textContent = `${angel.name} (${angel.multiplier})`;
-                row.appendChild(actionCell);
+    angels.forEach((angel, rowIndex) => {
+        const row = document.createElement('tr');
+        
+        const actionCell = document.createElement('td');
+        actionCell.className = 'action-cell clickable';
+        actionCell.textContent = `${angel.name} (${angel.multiplier})`;
+        actionCell.onclick = () => markAngel(rowIndex);
+        row.appendChild(actionCell);
 
-                for (let i = 0; i < angel.maxCells; i++) {
-                    const cell = document.createElement('td');
-                    cell.className = 'checkmark-cell';
-                    cell.textContent = i < angel.marks ? '✓' : '';
-                    cell.onclick = () => markAngel(rowIndex, i);
-                    row.appendChild(cell);
-                }
-
-                tbody.appendChild(row);
-            });
+        for (let i = 0; i < angel.maxCells; i++) {
+            const cell = document.createElement('td');
+            cell.className = 'checkmark-cell';
+            cell.textContent = i < angel.marks ? '✓' : '';
+            row.appendChild(cell);
         }
+
+        tbody.appendChild(row);
+    });
+}
 
         function createDemonsTable() {
-            const tbody = document.getElementById('demonsTableBody');
-            tbody.innerHTML = '';
+    const tbody = document.getElementById('demonsTableBody');
+    tbody.innerHTML = '';
 
-            demons.forEach((demon, rowIndex) => {
-                const row = document.createElement('tr');
-                row.className = demon.marks >= demon.maxCells ? 'row-limit-reached' : '';
-                
-                const actionCell = document.createElement('td');
-                actionCell.className = 'action-cell';
-                actionCell.textContent = `${demon.name} (${demon.multiplier})`;
-                row.appendChild(actionCell);
+    demons.forEach((demon, rowIndex) => {
+        const row = document.createElement('tr');
+        row.className = demon.marks >= demon.maxCells ? 'row-limit-reached' : '';
+        
+        // Action cell becomes clickable
+        const actionCell = document.createElement('td');
+        actionCell.className = 'action-cell clickable';
+        actionCell.textContent = `${demon.name} (${demon.multiplier})`;
+        actionCell.onclick = () => markDemon(rowIndex);
+        row.appendChild(actionCell);
 
-                for (let i = 0; i < 6; i++) {
-                    const cell = document.createElement('td');
-                    if (i < demon.maxCells) {
-                        cell.className = 'checkmark-cell';
-                        cell.textContent = i < demon.marks ? '✓' : '';
-                        cell.onclick = () => markDemon(rowIndex, i);
-                    } else {
-                        cell.className = 'checkmark-cell disabled';
-                    }
-                    row.appendChild(cell);
-                }
-
-                tbody.appendChild(row);
-            });
-        }
-
-        function markAngel(rowIndex, cellIndex) {
-            const angel = angels[rowIndex];
-            if (cellIndex === angel.marks && cellIndex < angel.maxCells) {
-                angel.marks++;
-                updatePoints(angel.multiplier);
-                addToLog(angel.name, true);
-                createAngelsTable();
+        // Handle merged cells for multipliers 2 and 3
+        if (demon.multiplier >= 2) {
+            // Create merged cells
+            const totalGroups = demon.maxCells;
+            for (let i = 0; i < totalGroups; i++) {
+                const cell = document.createElement('td');
+                cell.className = 'checkmark-cell';
+                cell.colSpan = demon.multiplier;
+                cell.textContent = i < demon.marks ? '✓' : '';
+                row.appendChild(cell);
+            }
+            // Add remaining empty cells
+            for (let i = totalGroups * demon.multiplier; i < 6; i++) {
+                const cell = document.createElement('td');
+                cell.className = 'checkmark-cell disabled';
+                row.appendChild(cell);
+            }
+        } else {
+            // Regular cells for multiplier 1
+            for (let i = 0; i < 6; i++) {
+                const cell = document.createElement('td');
+                cell.className = 'checkmark-cell';
+                cell.textContent = i < demon.marks ? '✓' : '';
+                row.appendChild(cell);
             }
         }
 
-        function markDemon(rowIndex, cellIndex) {
-            const demon = demons[rowIndex];
-            if (cellIndex === demon.marks && cellIndex < demon.maxCells) {
-                demon.marks++;
-                updatePoints(-demon.multiplier);
-                addToLog(demon.name, false);
-                createDemonsTable();
-            }
-        }
+        tbody.appendChild(row);
+    });
+}
+        
+        function markAngel(rowIndex) {
+    const angel = angels[rowIndex];
+    if (angel.marks < angel.maxCells) {
+        angel.marks++;
+        updatePoints(angel.multiplier);
+        addToLog(angel.name, true);
+        createAngelsTable();
+    }
+}
+
+        function markDemon(rowIndex) {
+    const demon = demons[rowIndex];
+    if (demon.marks < demon.maxCells) {
+        demon.marks++;
+        updatePoints(-demon.multiplier);
+        addToLog(demon.name, false);
+        createDemonsTable();
+    }
+}
 
         function addToLog(action, isAngel) {
             const logEntry = {
